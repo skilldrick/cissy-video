@@ -9,105 +9,21 @@
         font-size: 12px;
         text-decoration: none;
       }
+
+      button {
+        text-align: center;
+      }
+
+      .container {
+        background-color: rgba(0,0,0,0.1);
+        margin: auto;
+        text-align: center;
+      }
+
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-    <script>
-      $(document).ready(function() {
-        var audio, context, soundSource, soundBuffer, interval;
-
-        function init() {
-          if ("AudioContext" in window) {
-            context = new AudioContext();
-          } else if ("webkitAudioContext" in window) {
-            context = new webkitAudioContext();
-          } else {
-            alert("AudioContext not supported.");
-            throw new Error('AudioContext not supported.');
-          }
-
-          audio = $('audio')[0];
-        }
-
-        function startSound() {
-          soundSource = context.createMediaElementSource(audio);
-          soundSource.connect(context.destination);
-        }
-
-        function start() {
-          var lastTime = audio.currentTime;
-
-          var startTime = 2.9;
-          var bpm = 180;
-          var beatLength = 60 / bpm;
-
-          interval = setInterval(function () {
-            var time = 0;
-            for (var i = 0; true; i++) {
-              time = startTime + beatLength * i;
-              if (lastTime <= time && audio.currentTime > time) {
-                $(document).trigger('beat', i);
-              }
-              if (audio.currentTime < time) { //already passed
-                break;
-              }
-            }
-            lastTime = audio.currentTime;
-          }, 50);
-
-          audio.play();
-        }
-
-        function stop() {
-          audio.pause();
-          clearInterval(interval);
-        }
-
-        init();
-
-        $(document).keydown(function (e) {
-          if (e.keyCode == 27) {
-            stop();
-          } else if (e.keyCode == 32) {
-            start();
-          }
-        });
-
-        audio.addEventListener('canplay', function () {
-          startSound();
-        }, false);
-
-        var img = new Image();
-        img.src = "http://i.imgur.com/94Apv.gif";
-
-        $(document).on('beat', function (e, number) {
-          console.log('Beat', number);
-          if (number % 4 == 0) {
-            $('img').show();
-            $('img').prop('src', img.src);
-            $('body').css('background-color', '#f00');
-            makeBig($('img'));
-          }
-          if ((number + 2) % 4 == 0) {
-            $('img').removeAttr('src');
-            $('body').css('background-color', '#0f0');
-          }
-
-          if (number % 32 == 0 && number > 0) {
-            $('img').first().clone().appendTo('body');
-          }
-        });
-
-        $('button').click(function () {
-          start();
-          $(this).hide();
-        });
-      });
-
-      function makeBig($img) {
-        var height = $(window).height() * 0.9;
-        $img.height(height);
-      }
-    </script>
+    <script src="core.js"></script>
+    <script src="video.js"></script>
   </head>
   <body>
     <p><a href="https://github.com/skilldrick/cissy-video">Code</a> <a href="https://soundcloud.com/skilldrick/cissy-so-what-superstition-1">Music</a></p>
@@ -115,9 +31,10 @@
       <source src="cissy.ogg" />
       <source src="cissy.mp3" />
     </audio>
-    <img src="http://i.imgur.com/94Apv.gif" style="display: none" />
 
     <button>START!</button>
-
+    <div class="container">
+      <img src="http://i.imgur.com/94Apv.gif" style="display: none" />
+    </div>
   </body>
 </html>

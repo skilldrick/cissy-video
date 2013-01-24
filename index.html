@@ -18,8 +18,13 @@
         background-color: rgba(0,0,0,0.1);
         margin: auto;
         text-align: center;
+        position: relative;
+        overflow: hidden;
       }
 
+      .positionable {
+        position: absolute;
+      }
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script src="core.js"></script>
@@ -34,7 +39,7 @@
 
     <button>START!</button>
     <div class="container">
-      <img src="http://i.imgur.com/94Apv.gif" style="display: none" />
+      <img class="standupcat positionable small" src="http://i.imgur.com/94Apv.gif" style="display: none" />
     </div>
   </body>
 </html>

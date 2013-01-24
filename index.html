@@ -5,84 +5,72 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script>
       $(document).ready(function() {
-        var context, soundSource, soundBuffer;
+        var audio, context, soundSource, soundBuffer, interval;
 
         function init() {
-          if (typeof AudioContext == "function") {
+          if ("AudioContext" in window) {
             context = new AudioContext();
-          } else if (typeof webkitAudioContext == "function") {
+          } else if ("webkitAudioContext" in window) {
             context = new webkitAudioContext();
           } else {
-            throw new Error('AudioContext not supported. :(');
+            alert("AudioContext not supported.");
+            throw new Error('AudioContext not supported.');
           }
 
-          var lastTime = 0;
-
-          var start = 3;
-          var bpm = 180;
-          var beatLength = 60 / bpm;
-
-          setInterval(function () {
-            var time;
-            for (var i = 0; i < 120; i++) {
-              time = start + beatLength * i;
-              if (lastTime <= time && context.currentTime > time) {
-                $(document).trigger('beat', i);
-              }
-            }
-            lastTime = context.currentTime;
-          }, 50);
+          audio = $('audio')[0];
         }
 
         function startSound() {
-          var request = new XMLHttpRequest();
-          request.open("GET", "cissy.wav", true);
-          request.responseType = "arraybuffer";
-
-          request.onload = function() {
-            var audioData = request.response;
-            audioGraph(audioData);
-          };
-
-          request.send();
-        }
-
-        function playSound() {
-          soundSource.noteOn(context.currentTime);
-        }
-
-        function stopSound() {
-          soundSource.noteOff(context.currentTime);
-        }
-
-        $('.play').on('click', startSound);
-        $('.stop').on('click', stopSound);
-
-
-        function audioGraph(audioData) {
-          // create a sound source
-          soundSource = context.createBufferSource();
-
-          // The Audio Context handles creating source buffers from raw binary
-          soundBuffer = context.createBuffer(audioData, true/* make mono */);
-
-          // Add the buffered data to our object
-          soundSource.buffer = soundBuffer;
-
-          // Plug the cable from one thing to the other
+          soundSource = context.createMediaElementSource(audio);
           soundSource.connect(context.destination);
+          start();
+        }
 
-          // Finally
-          playSound(soundSource);
+        function start() {
+          var lastTime = audio.currentTime;
+
+          var startTime = 2.9;
+          var bpm = 180;
+          var beatLength = 60 / bpm;
+
+          interval = setInterval(function () {
+            var time = 0;
+            for (var i = 0; true; i++) {
+              time = startTime + beatLength * i;
+              if (lastTime <= time && audio.currentTime > time) {
+                $(document).trigger('beat', i);
+              }
+              if (audio.currentTime < time) { //already passed
+                break;
+              }
+            }
+            lastTime = audio.currentTime;
+          }, 50);
+
+          audio.play();
+        }
+
+        function stop() {
+          audio.pause();
+          clearInterval(interval);
         }
 
         init();
-        startSound();
 
+        $(document).keydown(function (e) {
+          if (e.keyCode == 27) {
+            stop();
+          } else if (e.keyCode == 32) {
+            start();
+          }
+        });
+
+        audio.addEventListener('canplay', function () {
+          startSound();
+        }, false);
 
         var img = new Image();
         img.src = "http://i.imgur.com/94Apv.gif";
-
 
         $(document).on('beat', function (e, number) {
           console.log('Beat', number);
@@ -90,92 +78,29 @@
             $('img').show();
             $('img').prop('src', img.src);
             $('body').css('background-color', '#f00');
+            makeBig($('img'));
           }
           if ((number + 2) % 4 == 0) {
             $('img').removeAttr('src');
             $('body').css('background-color', '#0f0');
           }
+
+          if (number % 32 == 0 && number > 0) {
+            $('img').first().clone().appendTo('body');
+          }
         });
+
 
       });
 
-
-      /*
-
-      $(document).ready(function () {
-        window.audio = $('audio')[0];
-        audio.addEventListener('canplay', function () {
-          console.log(audio.duration);
-          audio.play();
-        }, false);
-        var lastTime = 0;
-
-        var start = 2.9;
-        var bpm = 180;
-        var beatLength = 60 / bpm;
-
-
-        audio.addEventListener('timeupdate', function () {
-          var time;
-          for (var i = 0; i < 120; i++) {
-            time = start + beatLength * i;
-            if (lastTime <= time && this.currentTime > time) {
-              $(this).trigger('beat', i);
-            }
-          }
-          lastTime = this.currentTime;
-        }, false);
-
-        $(audio).on('beat', function (e, number) {
-          if (number % 4 == 0) {
-            $('img').show();
-            $('img').prop('src', img.src);
-            $('body').css('background-color', '#f00');
-          }
-          if ((number + 2) % 4 == 0) {
-            $('img').removeAttr('src');
-            $('body').css('background-color', '#0f0');
-          }
-        });
-
-        var lastTime = 0;
-
-        var start = 2.9;
-        var bpm = 180;
-        var beatLength = 60 / bpm;
-
-
-        audio.addEventListener('timeupdate', function () {
-          var time;
-          for (var i = 0; i < 120; i++) {
-            time = start + beatLength * i;
-            if (lastTime <= time && this.currentTime > time) {
-              $(this).trigger('beat', i);
-            }
-          }
-          lastTime = this.currentTime;
-        }, false);
-
-        $(audio).on('beat', function (e, number) {
-          if (number % 4 == 0) {
-            $('img').show();
-            $('img').prop('src', img.src);
-            $('body').css('background-color', '#f00');
-          }
-          if ((number + 2) % 4 == 0) {
-            $('img').removeAttr('src');
-            $('body').css('background-color', '#0f0');
-          }
-        });
-
-      });
-      */
+      function makeBig($img) {
+        var height = $(window).height() * 0.9;
+        $img.height(height);
+      }
     </script>
   </head>
   <body>
     <audio preload="auto" src="cissy.wav" type='audio/x-wav'></audio>
     <img src="http://i.imgur.com/94Apv.gif" style="display: none" />
-      <button class="play">Play</p>
-      <button class="stop">Stop</p>
   </body>
 </html>

@@ -23,7 +23,6 @@
         function startSound() {
           soundSource = context.createMediaElementSource(audio);
           soundSource.connect(context.destination);
-          start();
         }
 
         function start() {
@@ -90,7 +89,10 @@
           }
         });
 
-
+        $('button').click(function () {
+          start();
+          $(this).hide();
+        });
       });
 
       function makeBig($img) {
@@ -105,5 +107,7 @@
       <source src="cissy.mp3" />
     </audio>
     <img src="http://i.imgur.com/94Apv.gif" style="display: none" />
+
+    <button>START!</button>
   </body>
 </html>

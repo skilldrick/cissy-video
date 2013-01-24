@@ -4,42 +4,178 @@
     <title>!!!</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script>
+      $(document).ready(function() {
+        var context, soundSource, soundBuffer;
+
+        function init() {
+          if (typeof AudioContext == "function") {
+            context = new AudioContext();
+          } else if (typeof webkitAudioContext == "function") {
+            context = new webkitAudioContext();
+          } else {
+            throw new Error('AudioContext not supported. :(');
+          }
+
+          var lastTime = 0;
+
+          var start = 3;
+          var bpm = 180;
+          var beatLength = 60 / bpm;
+
+          setInterval(function () {
+            var time;
+            for (var i = 0; i < 120; i++) {
+              time = start + beatLength * i;
+              if (lastTime <= time && context.currentTime > time) {
+                $(document).trigger('beat', i);
+              }
+            }
+            lastTime = context.currentTime;
+          }, 50);
+        }
+
+        function startSound() {
+          var request = new XMLHttpRequest();
+          request.open("GET", "cissy.wav", true);
+          request.responseType = "arraybuffer";
+
+          request.onload = function() {
+            var audioData = request.response;
+            audioGraph(audioData);
+          };
+
+          request.send();
+        }
+
+        function playSound() {
+          soundSource.noteOn(context.currentTime);
+        }
+
+        function stopSound() {
+          soundSource.noteOff(context.currentTime);
+        }
+
+        $('.play').on('click', startSound);
+        $('.stop').on('click', stopSound);
+
+
+        function audioGraph(audioData) {
+          // create a sound source
+          soundSource = context.createBufferSource();
+
+          // The Audio Context handles creating source buffers from raw binary
+          soundBuffer = context.createBuffer(audioData, true/* make mono */);
+
+          // Add the buffered data to our object
+          soundSource.buffer = soundBuffer;
+
+          // Plug the cable from one thing to the other
+          soundSource.connect(context.destination);
+
+          // Finally
+          playSound(soundSource);
+        }
+
+        init();
+        startSound();
+
+
+        var img = new Image();
+        img.src = "http://i.imgur.com/94Apv.gif";
+
+
+        $(document).on('beat', function (e, number) {
+          console.log('Beat', number);
+          if (number % 4 == 0) {
+            $('img').show();
+            $('img').prop('src', img.src);
+            $('body').css('background-color', '#f00');
+          }
+          if ((number + 2) % 4 == 0) {
+            $('img').removeAttr('src');
+            $('body').css('background-color', '#0f0');
+          }
+        });
+
+      });
+
+
+      /*
+
       $(document).ready(function () {
         window.audio = $('audio')[0];
         audio.addEventListener('canplay', function () {
           console.log(audio.duration);
           audio.play();
         }, false);
-        var i = 0;
         var lastTime = 0;
 
         var start = 2.9;
         var bpm = 180;
-        var beats = 4;
-        var slice = (beats * 60) / bpm;
+        var beatLength = 60 / bpm;
 
-        var timeA = start;
-        var timeB = start + slice * 1;
-        var timeC = start + slice * 2;
-        var timeD = start + slice * 3;
 
         audio.addEventListener('timeupdate', function () {
           var time;
           for (var i = 0; i < 120; i++) {
-            time = start + slice * i;
+            time = start + beatLength * i;
             if (lastTime <= time && this.currentTime > time) {
-              (i % 2 == 0) ? $('img').show() : $('img').hide();
+              $(this).trigger('beat', i);
             }
           }
           lastTime = this.currentTime;
-          console.log(this.currentTime);
         }, false);
+
+        $(audio).on('beat', function (e, number) {
+          if (number % 4 == 0) {
+            $('img').show();
+            $('img').prop('src', img.src);
+            $('body').css('background-color', '#f00');
+          }
+          if ((number + 2) % 4 == 0) {
+            $('img').removeAttr('src');
+            $('body').css('background-color', '#0f0');
+          }
+        });
+
+        var lastTime = 0;
+
+        var start = 2.9;
+        var bpm = 180;
+        var beatLength = 60 / bpm;
+
+
+        audio.addEventListener('timeupdate', function () {
+          var time;
+          for (var i = 0; i < 120; i++) {
+            time = start + beatLength * i;
+            if (lastTime <= time && this.currentTime > time) {
+              $(this).trigger('beat', i);
+            }
+          }
+          lastTime = this.currentTime;
+        }, false);
+
+        $(audio).on('beat', function (e, number) {
+          if (number % 4 == 0) {
+            $('img').show();
+            $('img').prop('src', img.src);
+            $('body').css('background-color', '#f00');
+          }
+          if ((number + 2) % 4 == 0) {
+            $('img').removeAttr('src');
+            $('body').css('background-color', '#0f0');
+          }
+        });
+
       });
+      */
     </script>
   </head>
   <body>
-    <audio preload="auto" src="cissy.wav" controls type='audio/x-wav'></audio>
-    <br />
+    <audio preload="auto" src="cissy.wav" type='audio/x-wav'></audio>
     <img src="http://i.imgur.com/94Apv.gif" style="display: none" />
+      <button class="play">Play</p>
+      <button class="stop">Stop</p>
   </body>
 </html>

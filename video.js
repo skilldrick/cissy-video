@@ -10,10 +10,28 @@
     $container = $('.container');
 
     var standupcat = new Image();
-    standupcat.src = "http://i.imgur.com/94Apv.gif";
+    var standupcatsrc = "http://i.imgur.com/94Apv.gif";
+    standupcat.src = standupcatsrc;
 
     function newCat(pos) {
-      return position($('.standupcat').first().clone().appendTo('.container').show(), pos);
+      var $cat = $('<img>').addClass('standupcat positionable small').prop('src', standupcatsrc);
+      return position($cat.appendTo('.container'), pos);
+    }
+
+    function position($el, options) {
+      if (options.middle) {
+        $el.css('left', $container.width() / 2 - $el.width() / 2);
+      }
+      if (options.left) {
+        $el.css('left', 0);
+      }
+      if (options.right) {
+        $el.css('right', 0);
+      }
+      if (options.bottom) {
+        $el.css('bottom', 0);
+      }
+      return $el;
     }
 
     $(document).on('beat', function (e, number) {
@@ -22,7 +40,6 @@
       if (number % 4 == 0) {
         $('.standupcat').prop('src', standupcat.src);
         $('body').css('background-color', '#f00');
-        makeBig($('.standupcat.small'));
       }
       if (number % 4 == 2) {
         $('.standupcat').removeAttr('src');
@@ -48,28 +65,12 @@
         $('.standupcat.small').hide();
       }
 
+      makeBig($('.standupcat.small'));
       setContainerHeight();
     });
 
     setContainerHeight();
   }
-
-  function position($el, options) {
-    if (options.middle) {
-      $el.css('left', $container.width() / 2 - $el.width() / 2);
-    }
-    if (options.left) {
-      $el.css('left', 0);
-    }
-    if (options.right) {
-      $el.css('right', 0);
-    }
-    if (options.bottom) {
-      $el.css('bottom', 0);
-    }
-    return $el;
-  }
-
 
   function makeBig($img) {
     $img.css('height', '40%');

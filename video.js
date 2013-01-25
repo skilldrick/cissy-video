@@ -12,6 +12,10 @@
     var standupcat = new Image();
     standupcat.src = "http://i.imgur.com/94Apv.gif";
 
+    function newCat(pos) {
+      return position($('.standupcat').first().clone().appendTo('.container').show(), pos);
+    }
+
     $(document).on('beat', function (e, number) {
       console.log('Beat', number);
 
@@ -20,29 +24,31 @@
         $('body').css('background-color', '#f00');
         makeBig($('.standupcat.small'));
       }
-      if ((number + 2) % 4 == 0) {
+      if (number % 4 == 2) {
         $('.standupcat').removeAttr('src');
         $('body').css('background-color', '#0f0');
       }
 
       if (number == 0) {
-        position($('.standupcat').first().clone().appendTo('.container').show(), { middle: true });
+        newCat({ middle: true });
+      }
+      if (number == 16) {
+        newCat({ left: true });
+        newCat({ right: true });
       }
       if (number == 32) {
-        position($('.standupcat').first().clone().appendTo('.container').show(), { left: true });
-        position($('.standupcat').first().clone().appendTo('.container').show(), { right: true });
+        newCat({ left: true, bottom: true });
+        newCat({ right: true, bottom: true });
+        newCat({ middle: true, bottom: true });
       }
       if (number == 48) {
-        position($('.standupcat').first().clone().appendTo('.container').show(), { left: true, bottom: true });
-        position($('.standupcat').first().clone().appendTo('.container').show(), { right: true, bottom: true });
-        position($('.standupcat').first().clone().appendTo('.container').show(), { middle: true, bottom: true });
+        position(newCat({}).removeClass('small').css('height', '100%'), { middle: true });
       }
       if (number == 64) {
-        position($('.standupcat').first().clone().appendTo('.container').show().removeClass('small').css('height', '100%'), { middle: true });
-      }
-      if (number == 96) {
         $('.standupcat.small').hide();
       }
+
+      setContainerHeight();
     });
 
     setContainerHeight();
@@ -61,6 +67,7 @@
     if (options.bottom) {
       $el.css('bottom', 0);
     }
+    return $el;
   }
 
 
@@ -74,3 +81,10 @@
     $container.height(height).width(width);
   }
 })();
+/*
+http://25.media.tumblr.com/tumblr_me4to17Fi51rd2l87o1_500.gif;
+http://25.media.tumblr.com/tumblr_m6lz2mqSln1raq43io1_500.gif
+http://25.media.tumblr.com/tumblr_m6qc6t2lze1r4u9wdo1_500.gif
+http://cdn.cinemagr.am/cine_1/51727493.gif
+http://i.imgur.com/RssgfnU.gif
+*/

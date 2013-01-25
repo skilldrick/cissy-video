@@ -3,15 +3,25 @@
   <head>
     <title>!!!</title>
     <style>
+      p {
+        text-align: center;
+      }
+
       a {
         color: white;
         font-family: sans-serif;
         font-size: 12px;
         text-decoration: none;
+        margin: 5px;
       }
 
-      button {
-        text-align: center;
+      #start-button {
+        margin: auto;
+        margin-top: 5%;
+        width: 90%;
+        height: 85%;
+        font-size: 50px;
+        cursor: pointer;
       }
 
       .container {
@@ -37,8 +47,8 @@
       <source src="cissy.mp3" />
     </audio>
 
-    <button>START!</button>
     <div class="container">
+      <button id="start-button">GO!</button>
       <img class="standupcat positionable small" src="http://i.imgur.com/94Apv.gif" style="display: none" />
     </div>
   </body>

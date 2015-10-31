@@ -16,6 +16,7 @@
       'breadcat.gif',
       'wtfcat.gif',
       'pouncecat.gif',
+      'omgcat.gif',
     ];
 
     srcs.forEach(function (src) {

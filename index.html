@@ -33,7 +33,12 @@
       }
 
       .positionable {
+        display: block;
         position: absolute;
+      }
+
+      .hidden {
+        display: none;
       }
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
@@ -50,5 +55,7 @@
     <div class="container">
       <button id="start-button">GO!</button>
     </div>
+
+    <div class="hidden"></div>
   </body>
 </html>

@@ -17,11 +17,13 @@
       'wtfcat.gif',
       'pouncecat.gif',
       'omgcat.gif',
+      'pianocat.gif',
+      'keyboardcat.gif',
+      'maru.gif',
     ];
 
     srcs.forEach(function (src) {
-      var image = new Image();
-      image.src = src;
+      $('.hidden').append($('<img>').prop('src', src));
     });
 
     function randomEl(arr) {
@@ -102,8 +104,8 @@
         $('body').css('background-color', '#0f0');
       }
 
-      makeBig($('.gif.small'));
       setContainerHeight();
+      makeBig($('.gif.small'));
     });
 
     setContainerHeight();
